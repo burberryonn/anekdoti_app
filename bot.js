@@ -1,10 +1,17 @@
+require("dotenv").config();
 const { Bot, Keyboard } = require("grammy");
 const { getRandomGif } = require("./controlers/getRandomGift");
 const { getJoke } = require("./controlers/getJoke");
 
 // Инициализация бота
-const bot = new Bot("7389532998:AAGby3TxdbBs1saGQ9kLJd_bwaFzTyOv0Us"); // Замените "YOUR_BOT_TOKEN" на токен вашего бота
-const keyboard = new Keyboard().text("Анекдот").row().resized().persistent();
+const bot = new Bot(process.env.BOT_API); // Замените "YOUR_BOT_TOKEN" на токен вашего бота
+const keyboard = new Keyboard()
+  .text("Анекдот")
+  .row()
+  .text("Играть")
+  .row()
+  .resized()
+  .persistent();
 
 // Команда /start
 bot.command("start", (ctx) => {
@@ -35,7 +42,30 @@ bot.hears("Анекдот", async (ctx) => {
   }
 });
 
+bot.hears("Играть", (ctx) => {
+  ctx.reply(
+    `Перейдите в бота чтобы играть @AnektodisPodlivoyBot\n\nПропишите команду /game`
+  );
+});
 
+bot.command("game", async (ctx) => {
+  try {
+    await ctx.reply("Нажми на кнопку ниже, чтобы запустить игру!", {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "Запустить игру 🎮",
+              web_app: { url: process.env.MINI_APP_URL },
+            },
+          ],
+        ],
+      },
+    });
+  } catch {
+    await ctx.reply("Ошибка запуска игры!");
+  }
+});
 
 // Запуск бота
 bot.start();
